@@ -30,7 +30,7 @@ SCREEN_HEIGHT = MAZE_HEIGHT + HUD_HEIGHT
 
 FPS = 60
 PACMAN_SPEED = 140  # px/sec
-GHOST_SPEED = 120   # px/sec
+GHOST_SPEED = 120  # px/sec
 FRIGHTENED_DURATION = 6.0  # seconds
 RESPAWN_DELAY = 1.2  # seconds after death or eat ghost
 
@@ -48,13 +48,13 @@ FRIGHTENED_BLUE = (30, 144, 255)
 
 # Directions as vectors
 DIR_VECTORS = {
-    'STOP': (0, 0),
-    'LEFT': (-1, 0),
-    'RIGHT': (1, 0),
-    'UP': (0, -1),
-    'DOWN': (0, 1),
+    "STOP": (0, 0),
+    "LEFT": (-1, 0),
+    "RIGHT": (1, 0),
+    "UP": (0, -1),
+    "DOWN": (0, 1),
 }
-ALL_DIRS = ['LEFT', 'RIGHT', 'UP', 'DOWN']
+ALL_DIRS = ["LEFT", "RIGHT", "UP", "DOWN"]
 
 
 def grid_to_px(cell):
@@ -111,8 +111,8 @@ class Entity:
 
 class Pacman(Entity):
     def __init__(self, x, y, speed):
-        super().__init__(x, y, speed, 'STOP')
-        self.next_direction = 'STOP'
+        super().__init__(x, y, speed, "STOP")
+        self.next_direction = "STOP"
         self.radius = TILE_SIZE // 2 - 4
 
     def update(self, dt):
@@ -124,7 +124,7 @@ class Pacman(Entity):
                     self.direction = self.next_direction
             # If current dir blocked, stop
             if not self.can_move(self.direction):
-                self.direction = 'STOP'
+                self.direction = "STOP"
         self.move(dt)
         # Prevent entering walls due to overshoot
         if is_wall(next_cell(self.pos(), self.direction)):
@@ -134,7 +134,7 @@ class Pacman(Entity):
                     self.set_pos(clamp_to_cell_center(self.pos()))
 
     def can_move(self, direction):
-        if direction == 'STOP':
+        if direction == "STOP":
             return True
         nx, ny = next_cell(self.pos(), direction)
         return is_walkable((nx, ny))
@@ -166,10 +166,13 @@ class Ghost(Entity):
         if is_wall(next_cell(self.pos(), self.direction)):
             if not is_wall(px_to_grid(self.pos())):
                 self.set_pos(clamp_to_cell_center(self.pos()))
-                self.direction = choose_random_direction(self.pos(), opp_dir(self.direction))
+                self.direction = choose_random_direction(
+                    self.pos(), opp_dir(self.direction)
+                )
 
 
 # Utilities for movement
+
 
 def next_cell(pos, direction):
     vx, vy = DIR_VECTORS[direction]
@@ -178,15 +181,15 @@ def next_cell(pos, direction):
 
 
 def opp_dir(direction):
-    if direction == 'LEFT':
-        return 'RIGHT'
-    if direction == 'RIGHT':
-        return 'LEFT'
-    if direction == 'UP':
-        return 'DOWN'
-    if direction == 'DOWN':
-        return 'UP'
-    return 'STOP'
+    if direction == "LEFT":
+        return "RIGHT"
+    if direction == "RIGHT":
+        return "LEFT"
+    if direction == "UP":
+        return "DOWN"
+    if direction == "DOWN":
+        return "UP"
+    return "STOP"
 
 
 def available_dirs_from(pos):
@@ -206,7 +209,7 @@ def choose_random_direction(pos, exclude_direction=None):
     if exclude_direction and opp_dir(exclude_direction) in options and len(options) > 1:
         options.remove(opp_dir(exclude_direction))
     if not options:
-        return opp_dir(exclude_direction) if exclude_direction else 'STOP'
+        return opp_dir(exclude_direction) if exclude_direction else "STOP"
     return random.choice(options)
 
 
@@ -215,10 +218,10 @@ class Game:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption('Contoh Pacman')
+        pygame.display.set_caption("Contoh Pacman")
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.SysFont('arial', 22)
-        self.big_font = pygame.font.SysFont('arial', 34, bold=True)
+        self.font = pygame.font.SysFont("arial", 22)
+        self.big_font = pygame.font.SysFont("arial", 34, bold=True)
 
         # Initialize maze pellets copy so we can modify during play
         self.maze = [row[:] for row in maze_layout]
@@ -246,8 +249,8 @@ class Game:
         # Reset positions and timers
         pac_start = grid_to_px((3, 3))
         self.pacman.set_pos([pac_start[0], pac_start[1]])
-        self.pacman.direction = 'STOP'
-        self.pacman.next_direction = 'STOP'
+        self.pacman.direction = "STOP"
+        self.pacman.next_direction = "STOP"
         for g in self.ghosts:
             g.reset_to_spawn()
         self.frightened = False
@@ -332,13 +335,13 @@ class Game:
                 if event.key == pygame.K_r and (self.game_over or self.win):
                     self.restart()
                 if event.key == pygame.K_LEFT:
-                    self.pacman.next_direction = 'LEFT'
+                    self.pacman.next_direction = "LEFT"
                 elif event.key == pygame.K_RIGHT:
-                    self.pacman.next_direction = 'RIGHT'
+                    self.pacman.next_direction = "RIGHT"
                 elif event.key == pygame.K_UP:
-                    self.pacman.next_direction = 'UP'
+                    self.pacman.next_direction = "UP"
                 elif event.key == pygame.K_DOWN:
-                    self.pacman.next_direction = 'DOWN'
+                    self.pacman.next_direction = "DOWN"
 
     def draw(self):
         self.screen.fill(BLACK)
@@ -352,7 +355,12 @@ class Game:
                 px = x * TILE_SIZE
                 py = y * TILE_SIZE
                 if tile == 1:
-                    pygame.draw.rect(self.screen, WALL_BLUE, (px, py, TILE_SIZE, TILE_SIZE), border_radius=6)
+                    pygame.draw.rect(
+                        self.screen,
+                        WALL_BLUE,
+                        (px, py, TILE_SIZE, TILE_SIZE),
+                        border_radius=6,
+                    )
                 elif tile == 2:
                     cx, cy = px + TILE_SIZE // 2, py + TILE_SIZE // 2
                     pygame.draw.circle(self.screen, PELLET_COLOR, (cx, cy), 5)
@@ -383,14 +391,30 @@ class Game:
 
         # State messages
         if self.frightened:
-            msg = self.font.render(f"Power-Up: {self.fright_timer:0.1f}s", True, POWER_COLOR)
-            self.screen.blit(msg, (SCREEN_WIDTH - msg.get_width() - 16, MAZE_HEIGHT + 16))
+            msg = self.font.render(
+                f"Power-Up: {self.fright_timer:0.1f}s", True, POWER_COLOR
+            )
+            self.screen.blit(
+                msg, (SCREEN_WIDTH - msg.get_width() - 16, MAZE_HEIGHT + 16)
+            )
         if self.game_over:
             text = self.big_font.render("GAME OVER - Press R to Restart", True, WHITE)
-            self.screen.blit(text, ((SCREEN_WIDTH - text.get_width()) // 2, (MAZE_HEIGHT - text.get_height()) // 2))
+            self.screen.blit(
+                text,
+                (
+                    (SCREEN_WIDTH - text.get_width()) // 2,
+                    (MAZE_HEIGHT - text.get_height()) // 2,
+                ),
+            )
         if self.win:
             text = self.big_font.render("YOU WIN! - Press R to Restart", True, WHITE)
-            self.screen.blit(text, ((SCREEN_WIDTH - text.get_width()) // 2, (MAZE_HEIGHT - text.get_height()) // 2))
+            self.screen.blit(
+                text,
+                (
+                    (SCREEN_WIDTH - text.get_width()) // 2,
+                    (MAZE_HEIGHT - text.get_height()) // 2,
+                ),
+            )
 
         pygame.display.flip()
 
@@ -404,9 +428,10 @@ class Game:
 
 # Math helper
 
+
 def dist(p1, p2):
     return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Game().run()
